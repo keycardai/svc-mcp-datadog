@@ -5,7 +5,7 @@ Tools for Datadog dashboards: list_dashboards, get_dashboard.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_dashboard_tools(mcp: FastMCP) -> None:
         name="list_dashboards",
         description="List all Datadog dashboards. Returns dashboard titles, IDs, and layout types.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def list_dashboards(
         ctx: Context,
         filter_shared: bool | None = None,
@@ -33,8 +32,7 @@ def register_dashboard_tools(mcp: FastMCP) -> None:
             start: Starting offset for pagination.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",
@@ -76,7 +74,6 @@ def register_dashboard_tools(mcp: FastMCP) -> None:
         name="get_dashboard",
         description="Get detailed information about a specific Datadog dashboard including its widgets and layout.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def get_dashboard(
         ctx: Context,
         dashboard_id: str,
@@ -87,8 +84,7 @@ def register_dashboard_tools(mcp: FastMCP) -> None:
             dashboard_id: The dashboard ID (e.g., "abc-def-ghi").
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",

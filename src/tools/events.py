@@ -5,7 +5,7 @@ Tools for Datadog events: list_events.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_event_tools(mcp: FastMCP) -> None:
         name="list_events",
         description="Search events from the Datadog event stream. Filter by query, time range, and pagination.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def list_events(
         ctx: Context,
         filter_query: str | None = None,
@@ -37,8 +36,7 @@ def register_event_tools(mcp: FastMCP) -> None:
             page_cursor: Pagination cursor from previous response.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",

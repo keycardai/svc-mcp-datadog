@@ -5,7 +5,7 @@ Tools for Datadog APM: search_spans.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_trace_tools(mcp: FastMCP) -> None:
         name="search_spans",
         description="Search APM spans/traces in Datadog. Filter by service, operation, resource, and more using Datadog query syntax.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def search_spans(
         ctx: Context,
         query: str = "*",
@@ -37,8 +36,7 @@ def register_trace_tools(mcp: FastMCP) -> None:
             cursor: Pagination cursor from previous response.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             body = {
                 "data": {

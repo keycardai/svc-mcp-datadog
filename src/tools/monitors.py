@@ -5,7 +5,7 @@ Tools for Datadog monitors: list_monitors, get_monitor.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_monitor_tools(mcp: FastMCP) -> None:
         name="list_monitors",
         description="List Datadog monitors. Filter by name, tags, or monitor type. Returns monitor name, status, type, and query.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def list_monitors(
         ctx: Context,
         name: str | None = None,
@@ -35,8 +34,7 @@ def register_monitor_tools(mcp: FastMCP) -> None:
             page_size: Number of monitors per page (max 1000).
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",
@@ -80,7 +78,6 @@ def register_monitor_tools(mcp: FastMCP) -> None:
         name="get_monitor",
         description="Get detailed information about a specific Datadog monitor including its query, status, thresholds, and notification settings.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def get_monitor(
         ctx: Context,
         monitor_id: int,
@@ -93,8 +90,7 @@ def register_monitor_tools(mcp: FastMCP) -> None:
             group_states: Comma-separated states to filter groups by (e.g., "alert,warn,no data").
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",

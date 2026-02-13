@@ -5,7 +5,7 @@ Tools for Datadog hosts: list_hosts, get_host_totals.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_host_tools(mcp: FastMCP) -> None:
         name="list_hosts",
         description="Search and list hosts in your Datadog infrastructure. Filter by name, sort by CPU, load, or other metrics.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def list_hosts(
         ctx: Context,
         filter: str | None = None,
@@ -37,8 +36,7 @@ def register_host_tools(mcp: FastMCP) -> None:
             include_muted_hosts_data: Include muted host information.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",
@@ -85,7 +83,6 @@ def register_host_tools(mcp: FastMCP) -> None:
         name="get_host_totals",
         description="Get total number of active and up hosts in your Datadog infrastructure.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def get_host_totals(
         ctx: Context,
         from_ts: int | None = None,
@@ -96,8 +93,7 @@ def register_host_tools(mcp: FastMCP) -> None:
             from_ts: Only count hosts that have reported since this Unix timestamp (seconds).
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",

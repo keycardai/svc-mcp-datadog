@@ -5,7 +5,7 @@ Tools for Datadog incidents: list_incidents, get_incident.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_incident_tools(mcp: FastMCP) -> None:
         name="list_incidents",
         description="List Datadog incidents. Returns incident title, status, severity, and timestamps.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def list_incidents(
         ctx: Context,
         include: str | None = None,
@@ -31,8 +30,7 @@ def register_incident_tools(mcp: FastMCP) -> None:
             page_offset: Offset for pagination.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",
@@ -74,7 +72,6 @@ def register_incident_tools(mcp: FastMCP) -> None:
         name="get_incident",
         description="Get detailed information about a specific Datadog incident including timeline and impact details.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def get_incident(
         ctx: Context,
         incident_id: str,
@@ -87,8 +84,7 @@ def register_incident_tools(mcp: FastMCP) -> None:
             include: Related resources to include (e.g., "users,attachments").
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",

@@ -5,7 +5,7 @@ Tools for Datadog metrics: query_metrics, list_active_metrics.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_metric_tools(mcp: FastMCP) -> None:
         name="query_metrics",
         description="Query timeseries metric data from Datadog. Returns data points for a metric query over a time range. Example query: 'avg:system.cpu.user{host:myhost}'.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def query_metrics(
         ctx: Context,
         query: str,
@@ -31,8 +30,7 @@ def register_metric_tools(mcp: FastMCP) -> None:
             to_ts: End of the query time range (Unix epoch seconds).
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",
@@ -79,7 +77,6 @@ def register_metric_tools(mcp: FastMCP) -> None:
         name="list_active_metrics",
         description="List actively reporting metrics in Datadog from a given time. Optionally filter by host or tag.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def list_active_metrics(
         ctx: Context,
         from_ts: int,
@@ -94,8 +91,7 @@ def register_metric_tools(mcp: FastMCP) -> None:
             tag_filter: Filter metrics by tag (e.g., "env:prod").
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",

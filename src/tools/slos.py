@@ -5,7 +5,7 @@ Tools for Datadog SLOs: list_slos, get_slo, get_slo_history.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_slo_tools(mcp: FastMCP) -> None:
         name="list_slos",
         description="List Datadog Service Level Objectives. Filter by name, tags, or SLO type.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def list_slos(
         ctx: Context,
         ids: str | None = None,
@@ -37,8 +36,7 @@ def register_slo_tools(mcp: FastMCP) -> None:
             offset: Offset for pagination.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",
@@ -82,7 +80,6 @@ def register_slo_tools(mcp: FastMCP) -> None:
         name="get_slo",
         description="Get detailed information about a specific SLO including its targets, thresholds, and current status.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def get_slo(
         ctx: Context,
         slo_id: str,
@@ -95,8 +92,7 @@ def register_slo_tools(mcp: FastMCP) -> None:
             with_configured_alert_ids: Include configured alert IDs.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",
@@ -133,7 +129,6 @@ def register_slo_tools(mcp: FastMCP) -> None:
         name="get_slo_history",
         description="Get the SLO status history over a time period. Shows how the SLO performed over time.",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def get_slo_history(
         ctx: Context,
         slo_id: str,
@@ -150,8 +145,7 @@ def register_slo_tools(mcp: FastMCP) -> None:
             target: Target SLO percentage to evaluate against.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             data = await request(
                 "GET",

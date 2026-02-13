@@ -5,7 +5,7 @@ Tools for Datadog logs: search_logs.
 
 from fastmcp import FastMCP, Context
 
-from ..auth import auth_provider, get_datadog_credentials, DATADOG_API_URL
+from ..auth import get_datadog_credentials
 from ..client import DatadogClientError, request
 
 
@@ -16,7 +16,6 @@ def register_log_tools(mcp: FastMCP) -> None:
         name="search_logs",
         description="Search and filter log events in Datadog. Supports Datadog log search query syntax (e.g., 'service:web status:error').",
     )
-    @auth_provider.grant(DATADOG_API_URL)
     async def search_logs(
         ctx: Context,
         query: str = "*",
@@ -37,8 +36,7 @@ def register_log_tools(mcp: FastMCP) -> None:
             cursor: Pagination cursor from previous response.
         """
         try:
-            access_ctx = ctx.get_state("keycardai")
-            creds = get_datadog_credentials(access_ctx)
+            creds = get_datadog_credentials()
 
             body = {
                 "filter": {
